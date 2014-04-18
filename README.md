@@ -1,7 +1,7 @@
 pystats
 =======
 
-pystats plugin for twitchy bot by Matt McNamara &lt;https://github.com/MattMcNam/twitchy>
+pystats plugin for twitchy bot by Matt McNamara https://github.com/MattMcNam/twitchy
 Sizzling stats by SizzlingCalamari and dy/dx
 
 pystats plugin is used to pull the most recent sizzling stats log file fromsizzlingstats.com. The triggering command
