@@ -2,6 +2,7 @@ pystats
 =======
 
 pystats plugin for twitchy bot by Matt McNamara https://github.com/MattMcNam/twitchy
+
 Sizzling stats by SizzlingCalamari and dy/dx
 
 pystats plugin is used to pull the most recent sizzling stats log file fromsizzlingstats.com. The triggering command
@@ -15,4 +16,8 @@ on the architecture of twitchy bot and plugins can be found on the github.
 
 to-do:
 add an alt-case for players to redirect twitch usernames to steamurls. text document
+
 add a confirmation notice if the lobby info is more than a day old
+
+add !pred command to collect predictions from chat and keep them in a list. Can then
+use !predcheck to see if any users matched prediction to the stats
