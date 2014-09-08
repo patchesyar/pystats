@@ -15,6 +15,8 @@ add a confirmation notice if the lobby info is more than a day old
 
 from urllib.request import *
 from plugins.BasePlugin import BasePlugin
+#from Twitchy import modHandlers
+#from Twitchy import Twitch_Channel
 
 
 predsOn= False
@@ -36,25 +38,42 @@ class PystatsPlugin(BasePlugin):
         self.registerCommand('pred', self.pred)
         self.registerCommand('checkpred', self.predChecker)
         self.registerCommand('listpred', self.predlist)
+        self.registerCommand('pypredhelp', self.predHelper)
+
+
+##################################
+#####       Pypreds         ######
+##################################
+
+    def predHelper(self, nick, commandArg):
+        global predsOn
+        print("predhelper called by "+nick)
+        strin=""
+        if predsOn:
+            strin="Predictions are currently enabled"
+        else:
+            strin="Predictions are disabled, they should be re-enabled before the next match"
+            self.sendMessage("Make a prediction with '!pred x:y' "+strin)
         
         
     def predStart(self, nick, commandArg):
         print("predStart called by "+nick)
         global predsOn
-        if nick== 'tomdiamond' or nick== 'raysfire' or nick== 'twilitlord':
+        if nick== 'tomdiamond' or nick== 'raysfire' or nick== 'twilitlord' or nick=='newb':
             print("predictions are enabled")
             predsOn=True
 
     def predStop(self, nick, commandArg):
         print("predstop called by "+nick)
         global predsOn
-        if nick== 'tomdiamond' or nick== 'raysfire' or nick=='twilitlord;':
+        if nick== 'tomdiamond' or nick== 'raysfire' or nick=='twilitlord;' or nick=='newb':
             print("predictions are disabled")
             predsOn=False
 
     def pred(self, nick, commandArg):
         global predsOn
         global predslist
+        makepred=True
         if predsOn:
             print(nick+" has made a prediction")
             if len(commandArg)==2:
@@ -62,7 +81,12 @@ class PystatsPlugin(BasePlugin):
                 for element in predslist:
                     if element[0]== nick:
                         predslist.remove(element)
-                predslist.append((nick, commandArg[1]))
+                    if element[1]== commandArg[1]:
+                        self.sendMessage(element[0]+" has already made that prediction, try another one")
+                        makepred=False
+                if makepred:
+                    self.sendMessage(nick+" has made the prediction of "+commandArg[1])
+                    predslist.append((nick, commandArg[1]))
             else:
                 self.sendMessage("Hey "+nick+", you can make a prediction with '!pred x:y'")
         else:
@@ -70,7 +94,7 @@ class PystatsPlugin(BasePlugin):
             
     def predChecker(self, nick, commandArg):
         global predslist
-        if nick== 'tomdiamond' or nick== 'raysfire' or nick=='twilitlord;':
+        if nick== 'tomdiamond' or nick== 'raysfire' or nick=='twilitlord' or nick=='newb_':
             print(nick+" is checking the preds")
             if len(commandArg)!=2:
                 self.sendMessage("Hey "+nick+", remember to add the correct kd too!")
@@ -87,6 +111,8 @@ class PystatsPlugin(BasePlugin):
     def predlist(self, nick, commandArg):
         global predslist
         if len(commandArg)!=2:
+            if len(predslist)>10:
+                self.sendmessage(str(len(predslist))+" people have entered predictions")
             predmakers=""
             for element in predslist:
                 predmakers+=(element[0]+" ")
@@ -95,6 +121,11 @@ class PystatsPlugin(BasePlugin):
             for element in predslist:
                 if element[0]==commandArg[1]:
                     self.sendMessage(element[1]) #returns the kd prediction for a certain player
+
+#######################################
+#####           Pystats          ######
+#######################################
+
                     
 
     def subtestHandler(self, nick, commandArg):
@@ -113,8 +144,9 @@ class PystatsPlugin(BasePlugin):
         Reply function to '!stats'. prints to console and calls sizzlerGet to
         post link to sizzlingstats.com
         """
+        global Twitch_Channel
         print("!stats called by "+nick+". I hope this works...")
-        steamID= self.Twitch_Channel
+        steamID= Twitch_Channel
         if len(commandArg)==2:
             steamID=commandArg[1]
         self.sendMessage(sizzlerGet(steamID))
@@ -132,7 +164,7 @@ class PystatsPlugin(BasePlugin):
             s=url.read
         print(s)
 
-    def steamidCorrect(steamID):
+    def steamidCorrect(nick):
         """
         pulls the steam64 id from steamidconverter.com/<steamID>
         can accept customURL, steam64, or steamID
@@ -142,6 +174,7 @@ class PystatsPlugin(BasePlugin):
         steam64: 76561198010326847
         customURL: patchesyar
         """
+        findSubstitutes(nick)
         pagetitle="steamidconverter.com/"+steamID
         print(pagetitle)
         return str(steamID)
@@ -156,4 +189,4 @@ class PystatsPlugin(BasePlugin):
                 pass
             else:
                 return inline[1]
-        return twitchname
+        return nick
